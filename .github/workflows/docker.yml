@@ -2,33 +2,33 @@ name: Docker Build
 
 on:
   push:
-     branches:
+    branches:
       - main
       - dev
 
 jobs:
   build:
-     runs-on: ubuntu-latest
-  steps:
-  - name: Checkout code
-    uses: actions/checkout@v4
+    runs-on: ubuntu-latest
 
-  - name: Build Docker image
-    run: docker build -t myapp ./app
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-  - name: Run container
-    run: |
-      docker run -d \
-        --name myapp \
-        -p 3000:3000 \
-        myapp
+      - name: Build Docker image
+        run: docker build -t myapp ./app
 
-  - name: Test application
-    run: |
-      sleep 5
-      curl -f http://localhost:3000/health
+      - name: Run container
+        run: |
+          docker run -d \
+            --name myapp \
+            -p 3000:3000 \
+            myapp
 
-  - name: Show logs if failed
-    if: failure()
-    run: docker logs myapp
-    
+      - name: Test application
+        run: |
+          sleep 5
+          curl -f http://localhost:3000/health
+
+      - name: Show logs if failed
+        if: failure()
+        run: docker logs myapp
