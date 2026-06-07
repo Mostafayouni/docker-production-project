@@ -32,4 +32,4 @@ steps:
   - name: Show logs if failed
     if: failure()
     run: docker logs myapp
-```
+
