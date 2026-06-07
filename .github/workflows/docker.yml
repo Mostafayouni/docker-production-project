@@ -9,9 +9,7 @@ on:
 jobs:
   build:
      runs-on: ubuntu-latest
-
-
-steps:
+  steps:
   - name: Checkout code
     uses: actions/checkout@v4
 
@@ -33,4 +31,4 @@ steps:
   - name: Show logs if failed
     if: failure()
     run: docker logs myapp
-
+    
