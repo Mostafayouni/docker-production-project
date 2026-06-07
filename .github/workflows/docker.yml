@@ -1,45 +1,36 @@
-name: Docker CI
+name: Docker Build
 
 on:
-  push:
-    branches: [main, dev]
-  pull_request:
-    branches: [main, dev]
+push:
+branches:
+- main
+- dev
 
 jobs:
-  docker-test:
-    runs-on: ubuntu-latest
+build:
+runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+```
+steps:
+  - name: Checkout code
+    uses: actions/checkout@v4
 
-      - name: Validate Compose File
-        run: docker compose config
+  - name: Build Docker image
+    run: docker build -t myapp ./app
 
-      - name: Start Application
-        env:
-          MONGO_URL: ${{ secrets.MONGO_URL }}
-        run: docker compose up -d --build
+  - name: Run container
+    run: |
+      docker run -d \
+        --name myapp \
+        -p 3000:3000 \
+        myapp
 
-      - name: Wait For Application
-        run: |
-          echo "Waiting for app..."
+  - name: Test application
+    run: |
+      sleep 5
+      curl -f http://localhost:3000/health
 
-          for i in {1..30}; do
-            if curl -f http://localhost/health; then
-              echo "Application is healthy"
-              exit 0
-            fi
-
-            echo "Attempt $i failed"
-            sleep 2
-          done
-
-          echo "Application failed"
-          docker compose logs
-          exit 1
-
-      - name: Stop Application
-        if: always()
-        run: docker compose down
+  - name: Show logs if failed
+    if: failure()
+    run: docker logs myapp
+```
